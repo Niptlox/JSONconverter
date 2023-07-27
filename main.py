@@ -1,7 +1,8 @@
 import sys
 import json
 
-path ="F:\DIG\OCRV\Примеры\РеестрКандидат 25-07-2023 20-48-59.json"
+path ="file.json"
+
 if len(sys.argv) > 1:
     path = sys.argv[1]
 res_path = path[:-5] + ".html"
