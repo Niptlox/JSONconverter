@@ -37,8 +37,12 @@ def format_val(s):
         s = s
         if '\\"' in s:
             print(repr(s))
-        rs = repr(s).replace('"', r'\"')
+        rs = repr(s).replace('"', r'\"').replace(r"\'", "'")
+        if rs[1] == '"':
+            return '"' + rs[2:-2] + '"'
+
         return '"' + rs[1:-1] + '"'
+
     elif type(s) is bool:
         if s:
             return "true"
