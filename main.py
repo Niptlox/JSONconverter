@@ -7,7 +7,8 @@ JSON2HTML = "j2h"
 ALL_TYPES = {JSON2JSON, JSON2HTML, HTML2JSON}
 
 convert_type = JSON2HTML
-path = "file.json"
+path = "D:/WORK/20230727/0904 АП Анализ состава источников данны с Системе/Состав всех кубов и бизнес-объекты на их основе 27-07-2023 07-23-38.json"
+path = "D:/WORK/20230727/0904 АП Анализ состава источников данны с Системе/РеестрКандидат 25-07-2023 20-48-59.json"
 if len(sys.argv) > 1:
     path = sys.argv[1]
     if len(sys.argv) == 3:
@@ -30,18 +31,35 @@ def ver_filename(fn, ext):
 
 
 def format_val(s):
+
     if type(s) is str:
-        print("\n" in s)
-        return '"' + s + '"'
+        # print("(====", s, "====)")
+        s = s
+        if '\\"' in s:
+            print(repr(s))
+        rs = repr(s).replace('"', r'\"')
+        return '"' + rs[1:-1] + '"'
+    elif type(s) is bool:
+        if s:
+            return "true"
+        return "false"
+    elif s is None:
+        return "null"
     else:
         return str(s)
 
+def bwrite(st: str):
+    res_f.write(st.encode("utf-8"))
+
+def fwrite(st):
+    # bwrite(st)
+    res_f.write(st)
 
 def rec(s):
     global cnt_dict, cnt_list, res_f
     if type(s) is dict:
         typ = "dict"
-        res_f.write("{")
+        fwrite("{")
         cnt_dict += 1
         i = cnt_dict
         first = True
@@ -49,13 +67,13 @@ def rec(s):
             if first:
                 first = False
             else:
-                res_f.write(",")
-            res_f.write(format_val(key) + ':')
+                fwrite(",")
+            fwrite(format_val(key) + ':')
             rec(value)
-        res_f.write("}")
+        fwrite("}")
     elif type(s) is list:
         typ = "list"
-        res_f.write("[")
+        fwrite("[")
         cnt_list += 1
         i = cnt_list
         first = True
@@ -63,11 +81,11 @@ def rec(s):
             if first:
                 first = False
             else:
-                res_f.write(",")
+                fwrite(",")
             rec(value)
-        res_f.write("]")
+        fwrite("]")
     else:
-        res_f.write(format_val(s))
+        fwrite(format_val(s))
 
 
 def rec_json2json(s):
@@ -129,7 +147,7 @@ def export_json2json(data, res_path):
 if __name__ == '__main__':
     res_path = ver_filename(path[:-5], "json")
     with open(path, "r", encoding='utf-8') as json_f:
-        data = json.load(json_f)
+        data = json.loads(json_f.read())
     with open(res_path, "w", encoding='utf-8') as res_f:
         rec(data)
 
